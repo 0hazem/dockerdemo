@@ -17,8 +17,11 @@ $ cd rails-kubernetes
 $ docker build -t drkiq:v1 .
 ```
 ### 3. Edit Environment Variables
-* Environment Variables are passed to containers in the Yaml deployment configs. 
-
+```
+# Edit environment variables in the configmap drkiq-config.yaml
+# Create config map
+$ kubectl create -f drkiq-config.yaml
+```
 ### 3. Prepare Persistent Volumes for PostgreSQL and Redis
 ```
 $ kubectl create -f drkiq-postgress-persistentvolume.yaml
@@ -52,6 +55,8 @@ $ kubectl get service
 Alternatively Docker Compose can be used to manage the containers instead of Kubernetes. In that case use the included docker-compose.yml file and the following commands: 
 ```
 #Store your environment variables in a .drkiq.env file
+# OR
+#Put them directly in the docker-compose.yml
 
 # Create Volumes for postgreSql and Redis
 $ docker volume create --name drkiq-postgres
