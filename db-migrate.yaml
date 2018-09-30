@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+    name: db-migrate
+spec:
+    completions: 1
+    template:
+        metadata:
+            labels:
+                app: drkiq
+            name: db-migrate
+        spec:
+            containers:
+            - image: drkiq:v1
+              name: db-migrate
+              command: ["/bin/sh", "-c"]
+              args: ["bundle exec rake db:reset; bundle exec rake db:migrate"]
+              env:
+              - name: CACHE_URL
+                value: redis://redis:6379/0
+              - name: DATABASE_URL
+                value: postgresql://drkiq:yourpassword@postgres:5432/drkiq?encoding=utf8&pool=5&timeout=5000
+              - name: JOB_WORKER_URL
+                value: redis://redis:6379/0
+              - name: LISTEN_ON
+                value: 0.0.0.0:8000
+              - name: SECRET_TOKEN
+                value: asecuretokenwouldnormallygohere
+              - name: WORKER_PROCESSES
+                value: "1"
+              name: db-migrate
+            restartPolicy: Never
+status: {}

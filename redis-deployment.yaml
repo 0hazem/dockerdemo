@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: redis
+spec:
+    ports:
+    - name: "6379"
+      port: 6379
+      targetPort: 6379
+    selector:
+        app: drkiq
+status:
+    loadBalancer: {}
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+    name: redis
+spec:
+    selector:
+        matchLabels:
+            app: drkiq
+    replicas: 1
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                app: drkiq
+        spec:
+            containers:
+            - image: redis:3.0.5
+              name: redis
+              ports:
+              - containerPort: 6379
+              name: redis
+              volumeMounts:
+              - name: drkiq-redis
+                mountPath: /var/lib/redis/data
+            volumes:
+            - name: drkiq-redis
+              persistentVolumeClaim:
+                claimName: drkiq-redis-claim
+            restartPolicy: Always
+status: {}
